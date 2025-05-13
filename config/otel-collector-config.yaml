@@ -9,6 +9,7 @@ receivers:
 processors:
   batch:
     timeout: 5s
+    
   resource/add:
     attributes:
       - key: service.name
@@ -20,6 +21,11 @@ exporters:
     endpoint: "0.0.0.0:9090"
     resource_to_telemetry_conversion:
       enabled: true
+
+  otlp/tempo:
+    endpoint: "http://tempo:4317"
+    tls:
+      insecure: true
   
 
 service:
@@ -28,3 +34,8 @@ service:
       receivers: [otlp]
       processors: [resource/add]
       exporters: [prometheus]
+
+    traces:
+     receivers: [otlp]
+     processors: [batch, resource/add]
+     exporters: [otlp/tempo]
