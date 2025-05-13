@@ -2,7 +2,7 @@ FROM docker.io/python:3-slim
 
 WORKDIR /app
 
-COPY ./student_app /app
+COPY ./ ./
 
 # Install requirement.txt and Opentementry package
 RUN pip install -r requirements.txt && \
