@@ -16,13 +16,10 @@ processors:
         value: "student"
 
 exporters:
-  prometheusremotewrite:
-    endpoint: "http://prometheus:9090/api/v1/write"
-
-  # prometheus:
-  #   endpoint: "0.0.0.0:9090"
-  #   resource_to_telemetry_conversion:
-  #     enabled: true
+  prometheus:
+    endpoint: "0.0.0.0:9090"
+    resource_to_telemetry_conversion:
+      enabled: true
   
 
 service:
