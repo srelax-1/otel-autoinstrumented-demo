@@ -1,0 +1,82 @@
+version: "3.8"
+
+services:
+  student:
+    build: ./student_app
+    container_name: student
+    ports:
+      - "5000:5000"
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+      OTEL_EXPORTER_OTLP_PROTOCOL: "grpc"
+      OTEL_METRICS_EXPORTER: "otlp"
+      OTEL_TRACES_EXPORTER: "otlp"
+      OTEL_LOGS_EXPORTER: "otlp"
+      OTEL_SERVICE_NAME: "student"
+      OTEL_LOG_LEVEL: "debug"
+      OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=dev,service.namespace=school-api"
+    depends_on:
+      - otel-collector
+    networks:
+      - otel-network
+
+  # OpenTelemetry Collector
+  otel-collector:
+    image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:0.91.0
+    container_name: otel-collector
+    ports:
+      - "4317:4317"  # OTLP gRPC
+      - "4318:4318"  # OTLP HTTP
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    networks:
+      - otel-network
+
+  # Prometheus
+  prometheus:
+    # image: quay.io/prometheus/prometheus:v2.52.0
+    image: prom/prometheus:main
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus-config.yaml:/etc/prometheus/prometheus.yaml
+      - prometheus_data:/prometheus
+    command: 
+      - --config.file=/etc/prometheus/prometheus.yaml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=5h
+      - --web.enable-lifecycle
+      - --enable-feature=otlp-write-receiver
+      - --web.route-prefix=/
+    restart: unless-stopped
+    depends_on:
+      - otel-collector
+    networks:
+      - otel-network
+
+  # Grafana
+  grafana:
+    # image: grafana/grafana:11.5.2
+    image: grafana/grafana-oss:main-ubuntu
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    # volumes:
+      # - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+    depends_on:
+      - otel-collector
+    networks:
+      - otel-network
+
+volumes:
+  prometheus_data:
+
+networks:
+  otel-network:
+    driver: bridge
