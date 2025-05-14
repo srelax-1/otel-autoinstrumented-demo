@@ -18,7 +18,7 @@ processors:
 
 exporters:
   prometheus:
-    endpoint: "0.0.0.0:9090"
+    endpoint: "0.0.0.0:9464"
     resource_to_telemetry_conversion:
       enabled: true
 
@@ -30,8 +30,6 @@ exporters:
   loki:
     endpoint: "http://loki:3100/loki/api/v1/push"
     default_labels_enabled:
-    
-    # default_labels_enabled:
       exporter: true
       job: true
       instance: true

@@ -14,6 +14,8 @@ services:
       OTEL_LOG_LEVEL: "debug"
       OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=dev,service.namespace=school-api"
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: "true"
+      OTEL_METRIC_EXPORT_INTERVAL: 1000
+
     depends_on:
       - otel-collector
     networks:
@@ -26,6 +28,7 @@ services:
     ports:
       - "4317:4317"  # OTLP gRPC
       - "4318:4318"  # OTLP HTTP
+      - "9464:9464"  # Prometheus exporter
     command: ["--config=/etc/otel-collector-config.yaml"]
     volumes:
       - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
@@ -77,7 +80,6 @@ services:
     container_name: loki
     volumes:
       - loki_data:/loki
-      - ./loki:/etc/loki
       - loki-wal:/wal
       - ./config/loki-config.yaml:/etc/loki/loki-config.yaml
     command: ["-config.file=/etc/loki/loki-config.yaml"]
@@ -96,8 +98,8 @@ services:
     container_name: grafana
     ports:
       - "3000:3000"
-    # volumes:
-      # - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    volumes:
+      - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
