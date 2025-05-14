@@ -14,8 +14,7 @@ services:
       OTEL_LOG_LEVEL: "debug"
       OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=dev,service.namespace=school-api"
       OTEL_PYTHON_LOGGING_AUTO_INSTRUMENTATION_ENABLED: "true"
-      OTEL_METRIC_EXPORT_INTERVAL: 1000
-
+    restart: unless-stopped
     depends_on:
       - otel-collector
     networks:
@@ -28,8 +27,9 @@ services:
     ports:
       - "4317:4317"  # OTLP gRPC
       - "4318:4318"  # OTLP HTTP
-      - "9464:9464"  # Prometheus exporter
+      - "8000:8000"  # Prometheus exporter
     command: ["--config=/etc/otel-collector-config.yaml"]
+    restart: unless-stopped
     volumes:
       - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     networks:
@@ -68,8 +68,6 @@ services:
     ports:
       - "3200:3200"  # Query API (Grafana)
       - "3201:3201"
-      - "14318:4318"  # OTLP ingestion
-      - "14317:4317"  # OTLP gRPC
     restart: unless-stopped
     networks:
       - otel-network
@@ -86,6 +84,7 @@ services:
     user: root
     ports:
       - "3100:3100"
+    restart: unless-stopped
     depends_on:
       - otel-collector
     networks:
@@ -99,11 +98,13 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana-datasource.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - GF_AUTH_DISABLE_LOGIN_FORM=true
+    restart: unless-stopped
     depends_on:
       - otel-collector
     networks:
@@ -113,6 +114,7 @@ volumes:
   prometheus_data:
   loki_data:
   loki-wal:
+  grafana_data:
 
 networks:
   otel-network:

@@ -6,8 +6,8 @@ COPY ./ ./
 
 # Install requirement.txt and Opentementry package
 RUN pip install -r requirements.txt && \
-    pip install opentelemetry-distro opentelemetry-exporter-otlp && \
-    pip install opentelemetry-instrumentation-flask && \
+    pip install opentelemetry-distro opentelemetry-exporter-otlp opentelemetry-instrumentation-flask opentelemetry-sdk opentelemetry-exporter-prometheus && \
+    pip install opentelemetry-instrumentation-wsgi opentelemetry-instrumentation && \
     opentelemetry-bootstrap --action=install
 
 # Make port 5000 available to the world outside this container
