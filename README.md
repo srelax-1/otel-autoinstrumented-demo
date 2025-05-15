@@ -36,7 +36,7 @@ This command will:
 - Launch all required services using `docker-compose`
 
 ---
-###  Available Services After Startup
+###  3. Available Services After Startup
 ![Port image](asset/images/ports.png)
 
 Once running, the following services will be available:
@@ -47,3 +47,29 @@ Once running, the following services will be available:
 
 - Student App API – where you can send test requests
 ---
+
+###  4. Explore the metrics, logs and Traces
+![Metrics](asset/images/)
+![Logs](asset/images/)
+![Traces](asset/images/)
+
+Once running, the following services will be available:
+
+- Grafana UI – Metrics
+![Metrics](asset/images/)
+
+- Grafana UI – Logs
+![Logs](asset/images/)
+
+- Grafana UI – Traces
+![Traces](asset/images/)
+---
+
+### 5. Stop the Application
+To stop and clean up the demo environment, run:
+```make
+make stop
+```
+This will stop and remove all Docker containers and olumes started by the demo.
+
+
