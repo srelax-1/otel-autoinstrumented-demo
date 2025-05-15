@@ -33,7 +33,8 @@
 				"ms-azuretools.vscode-containers",
 				"ms-python.vscode-pylance",
 				"ms-python.python",
-				"ms-python.debugpy"
+				"ms-python.debugpy",
+				"DavidAnson.vscode-markdownlint"
 			]
 		}
 	}
