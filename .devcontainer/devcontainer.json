@@ -17,6 +17,17 @@
 		"9090": {
 			"label": "Prometheus UI"
 		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-vscode.makefile-tools",
+				"ms-azuretools.vscode-containers",
+				"ms-python.vscode-pylance",
+				"ms-python.python",
+				"ms-python.debugpy"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
